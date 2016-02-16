@@ -67,6 +67,8 @@ public @interface QuartzSchedule {
 
     String DEFAULT_TRIGGER_END_AT = "_noTriggerEndAt";
 
+    boolean DEFAULT_ALLOW_PARALLEL_INVOCATIONS = false;
+
     /**
      * The group name of the trigger to use for the scheduled method.
      */
@@ -156,5 +158,14 @@ public @interface QuartzSchedule {
      * @see CronScheduleBuilder#withMisfireHandlingInstructionIgnoreMisfires()
      */
     int cronScheduleMisfirePolicy() default DEFAULT_MISFIRE_POLICY;
+
+    /**
+     * NinjaQuartz tries to prevent multiple (running in parallel) invocations
+     * of the same scheduled method in different worker threads. If such
+     * parallel invocations are not a problem for you (or you need this), set
+     * this property to true. In most cases, allowing this is probably a bad
+     * idea.
+     */
+    boolean allowParallelInvocations() default DEFAULT_ALLOW_PARALLEL_INVOCATIONS;
 
 }

@@ -26,6 +26,7 @@ import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
+import org.quartz.ObjectAlreadyExistsException;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
@@ -37,6 +38,7 @@ import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.jensfendler.ninjaquartz.annotations.QuartzSchedule;
 import com.jensfendler.ninjaquartz.job.NinjaQuartzTask;
+import com.jensfendler.ninjaquartz.job.AbstractNinjaQuartzTaskImpl;
 import com.jensfendler.ninjaquartz.job.NinjaQuartzJob;
 
 /**
@@ -128,7 +130,16 @@ public class NinjaQuartzScheduleHelper {
             logger.info("Scheduled {}.{} with execution schedule {}", method.getDeclaringClass().getName(),
                     method.getName(), quartzSchedule.cronSchedule());
         } catch (SchedulerException e) {
-            logger.error("Failed to schedule " + method.getDeclaringClass().getName() + "." + method.getName(), e);
+            if (e instanceof ObjectAlreadyExistsException) {
+                // for some reason we're trying to schedule the same method
+                // multiple times. not to worry - unless the task name/group is
+                // the same
+                logger.debug(
+                        "Not scheduling " + method.getDeclaringClass().getName() + "." + method.getName() + " twice.",
+                        e);
+            } else {
+                logger.error("Failed to schedule " + method.getDeclaringClass().getName() + "." + method.getName(), e);
+            }
         }
     }
 
@@ -145,7 +156,7 @@ public class NinjaQuartzScheduleHelper {
         String jobName = quartzSchedule.jobName();
         if (QuartzSchedule.DEFAULT_JOB_NAME.equals(jobName)) {
             // by default, use a unique job name for all scheduled methods
-            jobName = JOB_NAME_PREFIX + method.getName() + "-" + System.currentTimeMillis();
+            jobName = JOB_NAME_PREFIX + method.getName();
         }
 
         String jobGroup = quartzSchedule.jobGroup();
@@ -162,9 +173,10 @@ public class NinjaQuartzScheduleHelper {
 
         boolean jobRecovery = quartzSchedule.jobRecovery();
         boolean jobDurability = quartzSchedule.jobDurability();
+        boolean allowParallelInvocations = quartzSchedule.allowParallelInvocations();
 
         // create the job to execute
-        NinjaQuartzTask jobTask = new NinjaQuartzTask() {
+        NinjaQuartzTask task = new AbstractNinjaQuartzTaskImpl(jobName + "/" + jobGroup) {
             @Override
             public void execute(JobExecutionContext context)
                     throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -186,7 +198,8 @@ public class NinjaQuartzScheduleHelper {
         JobDetail jobDetail = jobBuilder.build();
         // let the NinjaQuartzJob know which task (wrapping our scheduled
         // method) we want to execute
-        jobDetail.getJobDataMap().put(NinjaQuartzJob.JOB_TASK_KEY, jobTask);
+        jobDetail.getJobDataMap().put(NinjaQuartzJob.JOB_TASK_KEY, task);
+        jobDetail.getJobDataMap().put(NinjaQuartzJob.ALLOW_PARALLEL_INVOCATIONS_KEY, allowParallelInvocations);
 
         logger.debug("Created new job {} in group: {}.", jobName, jobGroup);
         return jobDetail;
@@ -202,7 +215,7 @@ public class NinjaQuartzScheduleHelper {
         String triggerName = quartzSchedule.triggerName();
         if (QuartzSchedule.DEFAULT_TRIGGER_NAME.equals(triggerName)) {
             // by default, use a unique trigger name for each scheduled method
-            triggerName = CRON_TRIGGER_NAME_PREFIX + method.getName() + "-" + System.currentTimeMillis();
+            triggerName = CRON_TRIGGER_NAME_PREFIX + method.getName();
         }
 
         String triggerGroup = quartzSchedule.triggerGroup();

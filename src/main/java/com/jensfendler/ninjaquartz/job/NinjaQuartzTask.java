@@ -34,4 +34,9 @@ public interface NinjaQuartzTask {
     public void execute(JobExecutionContext context)
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 
+    /**
+     * @return
+     */
+    public String getTaskName();
+
 }

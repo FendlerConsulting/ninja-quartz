@@ -16,6 +16,8 @@
 package com.jensfendler.ninjaquartz.job;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -39,11 +41,16 @@ public class NinjaQuartzJob implements Job {
      * The key name to use in the {@link JobDataMap} of a {@link JobDetail} when
      * setting task wrapping the scheduled method invocation.
      */
-    public static final String JOB_TASK_KEY = "nqJobTask";
+    public static final String JOB_TASK_KEY = "nqTask";
+
+    public static final String ALLOW_PARALLEL_INVOCATIONS_KEY = "nqAllowParallelInvocations";
 
     /**
-     * 
+     * A set of task names, representing all currently running tasks. If a
+     * task's name is not in this set, it is currently not running.
      */
+    private static final Set<String> runningTasks = new HashSet<String>();
+
     public NinjaQuartzJob() {
     }
 
@@ -52,51 +59,123 @@ public class NinjaQuartzJob implements Job {
      */
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        NinjaQuartzTask jobTask = (NinjaQuartzTask) context.getJobDetail().getJobDataMap().get(JOB_TASK_KEY);
-        if (jobTask == null) {
-            LOG.error("JobTask is null. Nothing to do in this Quartz Job, so it will be removed from the schedule.");
-            removeSelf(context);
+        NinjaQuartzTask task = (NinjaQuartzTask) context.getJobDetail().getJobDataMap().get(JOB_TASK_KEY);
+        if (task == null) {
+            LOG.error(
+                    "JobTask object for task {} is null. Nothing to do in this Quartz Job, so it will be removed from the schedule.");
+            removeSelf("NULL-TASK", context);
             return;
         }
 
+        // ensure we have a task name to use.
+        String taskName = task.getTaskName();
+        if (taskName == null) {
+            taskName = task.toString();
+        }
+
+        // disallow parallel invocations by default
+        boolean allowParallelInvocations = false;
+        if (context.getMergedJobDataMap().containsKey(ALLOW_PARALLEL_INVOCATIONS_KEY)) {
+            allowParallelInvocations = context.getMergedJobDataMap().getBooleanValue(ALLOW_PARALLEL_INVOCATIONS_KEY);
+        }
+
+        LOG.debug("allowParallelInvocations={} for task {}", allowParallelInvocations, taskName);
+
+        if (!allowParallelInvocations) {
+            if (isTaskRunning(taskName)) {
+                LOG.debug("Preventing parallel invocation of task {}.", taskName);
+                return;
+            } else {
+                LOG.debug("Task {} not currently running. Starting.", taskName);
+            }
+        }
+
+        taskIsStarting(taskName);
+
         try {
-            LOG.debug("Executing Ninja Quartz task{}.", context.getJobDetail().getDescription() != null
-                    ? " " + context.getJobDetail().getDescription() : "");
-            jobTask.execute(context);
-            LOG.debug("Ninja Quartz task{} execution finished. Next fire time will be: {}",
-                    context.getJobDetail().getDescription() != null ? " " + context.getJobDetail().getDescription()
-                            : "",
+
+            LOG.debug("Executing Ninja Quartz task {}{}.", taskName, context.getJobDetail().getDescription() != null
+                    ? " (" + context.getJobDetail().getDescription() : ")");
+
+            // invokd the scheduled method
+            task.execute(context);
+
+            LOG.debug("Ninja Quartz task{} execution finished. Next fire time will be: {}", taskName,
                     context.getNextFireTime().toString());
+
         } catch (IllegalAccessException e) {
-            LOG.error("Illegal access exception while trying to execute JobTask.", e);
-            removeSelf(context);
+            LOG.error("Illegal access exception while trying to execute task " + taskName + ".", e);
+            removeSelf(taskName, context);
+
         } catch (IllegalArgumentException e) {
-            LOG.error(
-                    "Illegal argument exception while trying to execute JobTask. Your scheduled method should not require any parameters!",
-                    e);
-            removeSelf(context);
+            LOG.error("Illegal argument exception while trying to execute task " + taskName
+                    + ". Your scheduled method should not require any parameters!", e);
+            removeSelf(taskName, context);
+
         } catch (InvocationTargetException e) {
-            LOG.error("Invocation target exception while trying to execute JobTask.", e);
-            removeSelf(context);
+            LOG.error("Invocation target exception while trying to execute task " + taskName + ".", e);
+            removeSelf(taskName, context);
+
         } catch (Throwable t) {
             // fallback for any other problem in the scheduled method
-            LOG.error("Exception during Quartz Job execution.", t);
+            LOG.error("Exception during execution of quartz task " + taskName + ".", t);
             // TODO use annotation parameter to determine if we should cancel
             // ourselves here in the event of any thrown exception
-            removeSelf(context);
+            removeSelf(taskName, context);
+
+        } finally {
+            // "remember" that the task is done.
+            taskHasFinished(taskName);
+        }
+    }
+
+    /**
+     * @param task
+     */
+    private void taskIsStarting(String taskName) {
+        synchronized (runningTasks) {
+            if (!runningTasks.add(taskName)) {
+                LOG.warn("Could not add task {} to set of running tasks. Parallel invocation prevention may not work.",
+                        taskName);
+            }
+        }
+    }
+
+    /**
+     * @param jobTask
+     */
+    private void taskHasFinished(String taskName) {
+        synchronized (runningTasks) {
+            if (!runningTasks.remove(taskName)) {
+                LOG.warn(
+                        "Could not remove task {} from set of running tasks. Parallel incovation prevention may not work.",
+                        taskName);
+            }
+        }
+    }
+
+    /**
+     * @param task
+     * @return
+     */
+    private boolean isTaskRunning(String taskName) {
+        synchronized (runningTasks) {
+            return runningTasks.contains(taskName);
         }
     }
 
     /**
      * @param context
      */
-    private void removeSelf(JobExecutionContext context) {
+    private void removeSelf(String taskName, JobExecutionContext context) {
         JobKey key = context.getJobDetail().getKey();
-        LOG.error("Removing job {} from scheduler to avoid repeated errors.", key.getName());
+        LOG.error("Removing task {} ({}) from scheduler to avoid repeated errors.", taskName, key.getName());
         try {
             context.getScheduler().deleteJob(key);
         } catch (SchedulerException e) {
-            LOG.error("Failed to cancel quartz job {} with null JobTask. You are likely to see this message again.");
+            LOG.error(
+                    "Failed to cancel quartz task {} (job {}) with null JobTask. You are likely to see this message again.",
+                    taskName, key);
         }
     }
 

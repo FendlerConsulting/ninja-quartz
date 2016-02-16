@@ -17,7 +17,9 @@ This project provides a module to integrate the [Quartz Scheduler](https://quart
 
 - Install the NinjaQuartzModule in your Ninja application's conf.Modules class:
 
-    install( NinjaQuartzModule.class );
+```java
+install( NinjaQuartzModule.class );
+```
 
 - Add `QuartzSchedule` annotations the the methods you would like to schedule with Quartz. 
   For the time being, only `CronTrigger`s are used (the standard trigger's behavious is already available in Ninja's default scheduler).

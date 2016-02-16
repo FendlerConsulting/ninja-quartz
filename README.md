@@ -23,6 +23,8 @@ This project provides a module to integrate the [Quartz Scheduler](https://quart
   For the time being, only `CronTrigger`s are used (the standard trigger's behavious is already available in Ninja's default scheduler).
   To set a schedule, add the required String parameter `cronSchedule` to the annotation.
 
+- Bind the classes containing your annotated methods using `bind(YourClassWithScheduledMethods.class)` in `conf.Module`.
+
 - Enjoy :-)
 
 

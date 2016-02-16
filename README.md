@@ -9,11 +9,13 @@ This project provides a module to integrate the [Quartz Scheduler](https://quart
 
 - Add the dependency to your application's pom.xml:
 
+```xml
     <dependency>
         <groupId>com.jensfendler</groupId>
         <artifactId>ninja-quartz</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </dependency>
+```
 
 - Install the NinjaQuartzModule in your Ninja application's conf.Modules class:
 

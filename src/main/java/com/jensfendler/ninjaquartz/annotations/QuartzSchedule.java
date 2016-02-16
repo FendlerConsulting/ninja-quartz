@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Fendler Consulting cc.
+ * Copyright 2016 Fendler Consulting cc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

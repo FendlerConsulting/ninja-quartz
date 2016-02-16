@@ -15,28 +15,16 @@
  */
 package com.jensfendler.ninjaquartz.job;
 
-import java.lang.reflect.InvocationTargetException;
-
-import org.quartz.JobExecutionContext;
+import org.quartz.DisallowConcurrentExecution;
 
 /**
  * @author Jens Fendler <jf@jensfendler.com>
  *
  */
-public interface NinjaQuartzTask {
+@DisallowConcurrentExecution
+public class NonConcurrentNinjaQuartzJob extends AbstractNinjaQuartzJob {
 
-    /**
-     * @param context
-     * @throws IllegalAccessException
-     * @throws IllegalArgumentException
-     * @throws InvocationTargetException
-     */
-    public void execute(JobExecutionContext context)
-            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
-
-    /**
-     * @return
-     */
-    public String getTaskName();
-
+    public NonConcurrentNinjaQuartzJob() {
+        super();
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Fendler Consulting cc.
+ * Copyright 2016 Fendler Consulting cc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,8 @@ import com.google.inject.Singleton;
 import com.jensfendler.ninjaquartz.annotations.QuartzSchedule;
 import com.jensfendler.ninjaquartz.job.NinjaQuartzTask;
 import com.jensfendler.ninjaquartz.job.AbstractNinjaQuartzTaskImpl;
-import com.jensfendler.ninjaquartz.job.NinjaQuartzJob;
+import com.jensfendler.ninjaquartz.job.ConcurrentNinjaQuartzJob;
+import com.jensfendler.ninjaquartz.job.NonConcurrentNinjaQuartzJob;
 
 /**
  * @author Jens Fendler <jf@jensfendler.com>
@@ -190,16 +191,16 @@ public class NinjaQuartzScheduleHelper {
                 }
             }
         };
-        JobBuilder jobBuilder = JobBuilder.newJob(NinjaQuartzJob.class).withIdentity(jobName, jobGroup)
-                .requestRecovery(jobRecovery).storeDurably(jobDurability);
+        JobBuilder jobBuilder = JobBuilder
+                .newJob(allowParallelInvocations ? ConcurrentNinjaQuartzJob.class : NonConcurrentNinjaQuartzJob.class)
+                .withIdentity(jobName, jobGroup).requestRecovery(jobRecovery).storeDurably(jobDurability);
         if (jobDescription != null) {
             jobBuilder = jobBuilder.withDescription(jobDescription);
         }
         JobDetail jobDetail = jobBuilder.build();
         // let the NinjaQuartzJob know which task (wrapping our scheduled
         // method) we want to execute
-        jobDetail.getJobDataMap().put(NinjaQuartzJob.JOB_TASK_KEY, task);
-        jobDetail.getJobDataMap().put(NinjaQuartzJob.ALLOW_PARALLEL_INVOCATIONS_KEY, allowParallelInvocations);
+        jobDetail.getJobDataMap().put(NonConcurrentNinjaQuartzJob.JOB_TASK_KEY, task);
 
         logger.debug("Created new job {} in group: {}.", jobName, jobGroup);
         return jobDetail;

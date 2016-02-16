@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Fendler Consulting cc.
+ * Copyright 2016 Fendler Consulting cc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 package com.jensfendler.ninjaquartz.job;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -33,9 +31,9 @@ import org.slf4j.LoggerFactory;
  * @author Jens Fendler <jf@jensfendler.com>
  *
  */
-public class NinjaQuartzJob implements Job {
+public abstract class AbstractNinjaQuartzJob implements Job {
 
-    public static final Logger LOG = LoggerFactory.getLogger(NinjaQuartzJob.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(NonConcurrentNinjaQuartzJob.class);
 
     /**
      * The key name to use in the {@link JobDataMap} of a {@link JobDetail} when
@@ -43,15 +41,10 @@ public class NinjaQuartzJob implements Job {
      */
     public static final String JOB_TASK_KEY = "nqTask";
 
-    public static final String ALLOW_PARALLEL_INVOCATIONS_KEY = "nqAllowParallelInvocations";
-
     /**
-     * A set of task names, representing all currently running tasks. If a
-     * task's name is not in this set, it is currently not running.
+     * 
      */
-    private static final Set<String> runningTasks = new HashSet<String>();
-
-    public NinjaQuartzJob() {
+    public AbstractNinjaQuartzJob() {
     }
 
     /**
@@ -72,25 +65,6 @@ public class NinjaQuartzJob implements Job {
         if (taskName == null) {
             taskName = task.toString();
         }
-
-        // disallow parallel invocations by default
-        boolean allowParallelInvocations = false;
-        if (context.getMergedJobDataMap().containsKey(ALLOW_PARALLEL_INVOCATIONS_KEY)) {
-            allowParallelInvocations = context.getMergedJobDataMap().getBooleanValue(ALLOW_PARALLEL_INVOCATIONS_KEY);
-        }
-
-        LOG.debug("allowParallelInvocations={} for task {}", allowParallelInvocations, taskName);
-
-        if (!allowParallelInvocations) {
-            if (isTaskRunning(taskName)) {
-                LOG.debug("Preventing parallel invocation of task {}.", taskName);
-                return;
-            } else {
-                LOG.debug("Task {} not currently running. Starting.", taskName);
-            }
-        }
-
-        taskIsStarting(taskName);
 
         try {
 
@@ -123,44 +97,6 @@ public class NinjaQuartzJob implements Job {
             // ourselves here in the event of any thrown exception
             removeSelf(taskName, context);
 
-        } finally {
-            // "remember" that the task is done.
-            taskHasFinished(taskName);
-        }
-    }
-
-    /**
-     * @param task
-     */
-    private void taskIsStarting(String taskName) {
-        synchronized (runningTasks) {
-            if (!runningTasks.add(taskName)) {
-                LOG.warn("Could not add task {} to set of running tasks. Parallel invocation prevention may not work.",
-                        taskName);
-            }
-        }
-    }
-
-    /**
-     * @param jobTask
-     */
-    private void taskHasFinished(String taskName) {
-        synchronized (runningTasks) {
-            if (!runningTasks.remove(taskName)) {
-                LOG.warn(
-                        "Could not remove task {} from set of running tasks. Parallel incovation prevention may not work.",
-                        taskName);
-            }
-        }
-    }
-
-    /**
-     * @param task
-     * @return
-     */
-    private boolean isTaskRunning(String taskName) {
-        synchronized (runningTasks) {
-            return runningTasks.contains(taskName);
         }
     }
 

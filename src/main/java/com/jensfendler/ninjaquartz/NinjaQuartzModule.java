@@ -30,22 +30,25 @@ import com.jensfendler.ninjaquartz.provider.QuartzSchedulerFactoryProvider;
  */
 public class NinjaQuartzModule extends AbstractModule {
 
-	private static final Logger logger = LoggerFactory.getLogger(NinjaQuartzModule.class);
+    private static final Logger logger = LoggerFactory.getLogger(NinjaQuartzModule.class);
 
-	/**
-	 * @see com.google.inject.AbstractModule#configure()
-	 */
-	@Override
-	protected void configure() {
-		logger.info("NinjaQuartz Module initialising.");
+    /**
+     * @see com.google.inject.AbstractModule#configure()
+     */
+    @Override
+    protected void configure() {
+        logger.info("NinjaQuartz Module initialising.");
 
-		bind(SchedulerFactory.class).toProvider(QuartzSchedulerFactoryProvider.class).in(Singleton.class);
-		NinjaQuartzScheduleHelper scheduleHelper = new NinjaQuartzScheduleHelper();
-		requestInjection(scheduleHelper);
-		bindListener(Matchers.any(), new NinjaQuartzTypeListener(scheduleHelper));
-		bind(NinjaQuartzScheduleHelper.class).toInstance(scheduleHelper);
+        // disable Quartz' checking for updates
+        System.setProperty("org.terracotta.quartz.skipUpdateCheck", "true");
 
-		logger.info("NinjaQuartz Module initialisation.");
-	}
+        bind(SchedulerFactory.class).toProvider(QuartzSchedulerFactoryProvider.class).in(Singleton.class);
+        NinjaQuartzScheduleHelper scheduleHelper = new NinjaQuartzScheduleHelper();
+        requestInjection(scheduleHelper);
+        bindListener(Matchers.any(), new NinjaQuartzTypeListener(scheduleHelper));
+        bind(NinjaQuartzScheduleHelper.class).toInstance(scheduleHelper);
+
+        logger.info("NinjaQuartz Module initialisation completed.");
+    }
 
 }

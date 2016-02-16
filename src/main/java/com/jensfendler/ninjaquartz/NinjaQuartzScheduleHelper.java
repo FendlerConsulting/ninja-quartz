@@ -88,13 +88,11 @@ public class NinjaQuartzScheduleHelper {
     public void scheduleTarget(Object target) {
         logger.debug("Scheduling target object of type {}", target.getClass().getName());
 
-        if (target != null) {
-            Class<?> clazz = target.getClass();
-            for (Method method : clazz.getMethods()) {
-                QuartzSchedule quartzSchedule = method.getAnnotation(QuartzSchedule.class);
-                if (quartzSchedule != null) {
-                    scheduleMethod(target, method, quartzSchedule);
-                }
+        Class<?> clazz = target.getClass();
+        for (Method method : clazz.getMethods()) {
+            QuartzSchedule quartzSchedule = method.getAnnotation(QuartzSchedule.class);
+            if (quartzSchedule != null) {
+                scheduleMethod(target, method, quartzSchedule);
             }
         }
     }
@@ -211,7 +209,7 @@ public class NinjaQuartzScheduleHelper {
         if (QuartzSchedule.DEFAULT_TRIGGER_GROUP.equals(triggerGroup)) {
             // by default, use the same trigger group name for all methods
             // within the same declaring class.
-            triggerName = CRON_TRIGGER_GROUP_PREFIX + method.getDeclaringClass().getName();
+            triggerGroup = CRON_TRIGGER_GROUP_PREFIX + method.getDeclaringClass().getName();
         }
 
         Date startAt = parseTriggerDatetime(quartzSchedule.triggerStartAt(), method);
@@ -295,7 +293,8 @@ public class NinjaQuartzScheduleHelper {
             d = sdf.parse(datetime);
             return d;
         } catch (ParseException e) {
-            logger.warn(
+            // this is not necessarily an error. default values are empty.
+            logger.debug(
                     "Invalid datetime format for parameter value '{}' on {}.{}. Expected format is '{}'. "
                             + "Affected Start/End constraint will NOT be used.",
                     datetime, method.getDeclaringClass().getName(), method.getName(), TRIGGER_DATETIME_FORMAT);

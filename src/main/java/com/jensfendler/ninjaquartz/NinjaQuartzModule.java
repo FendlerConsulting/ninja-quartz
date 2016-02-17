@@ -25,7 +25,7 @@ import com.google.inject.matcher.Matchers;
 import com.jensfendler.ninjaquartz.provider.QuartzSchedulerFactoryProvider;
 
 /**
- * @author Jens Fendler <jf@jensfendler.com>
+ * @author Jens Fendler
  *
  */
 public class NinjaQuartzModule extends AbstractModule {

@@ -19,8 +19,13 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.quartz.JobExecutionContext;
 
+import com.jensfendler.ninjaquartz.annotations.QuartzSchedule;
+
 /**
- * @author Jens Fendler <jf@jensfendler.com>
+ * A {@link NinjaQuartzTask} wraps the invocation of a scheduled method (i.e. a
+ * method annotated with {@link QuartzSchedule}).
+ * 
+ * @author Jens Fendler
  *
  */
 public interface NinjaQuartzTask {
@@ -35,7 +40,7 @@ public interface NinjaQuartzTask {
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 
     /**
-     * @return
+     * @return the name of the wrapped task
      */
     public String getTaskName();
 

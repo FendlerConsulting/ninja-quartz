@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Jens Fendler <jf@jensfendler.com>
+ * @author Jens Fendler
  *
  */
 public abstract class AbstractNinjaQuartzJob implements Job {

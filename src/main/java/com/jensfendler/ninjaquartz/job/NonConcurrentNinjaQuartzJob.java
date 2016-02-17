@@ -20,7 +20,7 @@ import org.quartz.DisallowConcurrentExecution;
 /**
  * Quartz Job Wrapper for Non-Concurrent and Stateful jobs.
  * 
- * @author Jens Fendler <jf@jensfendler.com>
+ * @author Jens Fendler
  *
  */
 @DisallowConcurrentExecution

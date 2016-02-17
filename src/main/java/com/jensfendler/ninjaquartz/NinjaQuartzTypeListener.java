@@ -27,13 +27,16 @@ import com.google.inject.spi.TypeListener;
 import com.jensfendler.ninjaquartz.annotations.QuartzSchedule;
 
 /**
- * @author Jens Fendler <jf@jensfendler.com>
+ * @author Jens Fendler
  *
  */
 public class NinjaQuartzTypeListener implements TypeListener {
 
     static final Logger logger = LoggerFactory.getLogger(NinjaQuartzScheduleHelper.class);
 
+    /**
+     * The {@link NinjaQuartzScheduleHelper} as passed to the constructor.
+     */
     NinjaQuartzScheduleHelper scheduleHelper;
 
     public NinjaQuartzTypeListener(NinjaQuartzScheduleHelper scheduleHelper) {
@@ -56,6 +59,15 @@ public class NinjaQuartzTypeListener implements TypeListener {
         }
     }
 
+    /**
+     * Listener to receive injection events on a per-instance basis. This will
+     * be used to do the scheduling (which requires a "target" instance to
+     * invoke the scheduled methods on.)
+     * 
+     * @author Jens Fendler
+     *
+     * @param <I>
+     */
     private static class QuartzScheduleInjectionListener<I> implements InjectionListener<I> {
 
         private final NinjaQuartzScheduleHelper scheduleHelper;

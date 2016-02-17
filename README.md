@@ -8,7 +8,7 @@ Basic Usage:
 
 - Clone the repository and install locally using `mvn clean compile install` (currently, this repository is not pushed to Maven Central - but might be in the future) 
 
-- Add the dependency to your application's pom.xml:
+- Add the dependency to your application's `pom.xml`:
 
 ```xml
 
@@ -20,7 +20,7 @@ Basic Usage:
 
 ```
 
-- Install the NinjaQuartzModule in your Ninja application's conf.Modules class:
+- Install an instance of the `NinjaQuartzModule` in your Ninja application's `conf.Modules class`:
 
 ```java
 
@@ -55,7 +55,7 @@ public class MySchedules {
 
 ```
 
-Please note that scheduled methods may have any return value (which is not further used by Ninja-Quartz), but must have either _no_ arguments, or exactly one argument of type `JobExecutionContext` which gives the method access to the Quartz job's context. 
+Please note that scheduled methods may have any return value (which is not further used by Ninja-Quartz), but must have either _no_ arguments, or _exactly one argument of type `JobExecutionContext`_ which gives the method access to the Quartz job's context. 
 
 - Bind the classes containing your annotated methods using `bind(YourClassWithScheduledMethods.class)` in `conf.Module`.
 
@@ -106,7 +106,7 @@ public Result numberOfJobs() {
 
 ```
 
-Please have a look at the `NinjaQuartzUtil` interface for available methods.
+Please have a look at the `NinjaQuartzUtil` interface for details of available methods.
 
 
 Known Issues

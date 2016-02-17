@@ -33,7 +33,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 /**
- * @author Jens Fendler <jf@jensfendler.com>
+ * @author Jens Fendler
  *
  */
 public class NinjaQuartzUtilImpl implements NinjaQuartzUtil {

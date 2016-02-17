@@ -20,7 +20,7 @@ import org.quartz.PersistJobDataAfterExecution;
 /**
  * Quartz Job Wrapper for Concurrent and Stateful jobs.
  * 
- * @author Jens Fendler <jf@jensfendler.com>
+ * @author Jens Fendler
  *
  */
 @PersistJobDataAfterExecution

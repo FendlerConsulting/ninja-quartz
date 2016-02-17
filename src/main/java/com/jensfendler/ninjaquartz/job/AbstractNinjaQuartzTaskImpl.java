@@ -21,7 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 import org.quartz.JobExecutionContext;
 
 /**
- * @author Jens Fendler <jf@jensfendler.com>
+ * @author Jens Fendler
  *
  */
 public abstract class AbstractNinjaQuartzTaskImpl implements NinjaQuartzTask, Serializable {

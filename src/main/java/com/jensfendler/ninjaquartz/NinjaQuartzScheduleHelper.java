@@ -46,7 +46,7 @@ import com.jensfendler.ninjaquartz.job.NonConcurrentNinjaQuartzJob;
 import com.jensfendler.ninjaquartz.job.NonConcurrentStatefulNinjaQuartzJob;
 
 /**
- * @author Jens Fendler <jf@jensfendler.com>
+ * @author Jens Fendler
  *
  */
 @Singleton
@@ -54,8 +54,8 @@ public class NinjaQuartzScheduleHelper {
 
     /**
      * The datetime format to use for the {@link QuartzSchedule} annotation's
-     * {@link QuartzSchedule# triggerStartAt()} and
-     * {@link QuartzSchedule# triggerEndAt()} parameters.
+     * {@link QuartzSchedule#triggerStartAt()} and
+     * {@link QuartzSchedule#triggerEndAt()} parameters.
      */
     public static final String TRIGGER_DATETIME_FORMAT = "yyyyMMddHHmmSS";
 
@@ -89,7 +89,9 @@ public class NinjaQuartzScheduleHelper {
      * Scans all methods of the given object's class for NinjaQuartz scheduler
      * annotations, and schedules these for execution using the given object.
      * 
-     * @param method
+     * @param target
+     *            the target instance (of the class containing the scheduled
+     *            method)
      */
     public void scheduleTarget(Object target) {
         logger.debug("Scheduling target object of type {}", target.getClass().getName());

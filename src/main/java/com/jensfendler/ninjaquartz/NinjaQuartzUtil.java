@@ -24,7 +24,18 @@ import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 
 /**
- * @author Jens Fendler <jf@jensfendler.com>
+ * Utility methods which allow users to interact with Quartz objects (i.e.
+ * Schedulers, Triggers, and JobDetails).
+ * 
+ * To use these methods, inject {@link NinjaQuartzUtil} into your class e.g.
+ * like this:
+ * 
+ * <code>
+ * &#64;Inject
+ * NinjaQuartzUtil quartzUtil;
+ * </code>
+ * 
+ * @author Jens Fendler
  *
  */
 public interface NinjaQuartzUtil {
@@ -32,13 +43,16 @@ public interface NinjaQuartzUtil {
     /**
      * @return a {@link Collection} of all available {@link Scheduler}s.
      * @throws SchedulerException
+     *             as thrown by the Scheduler
      */
     public Collection<Scheduler> getAllSchedulers() throws SchedulerException;
 
     /**
      * @param schedulerName
+     *            the name of the scheduler to get
      * @return the {@link Scheduler} with the given name.
      * @throws SchedulerException
+     *             as thrown by the Scheduler
      */
     public Scheduler getSchedulerByName(String schedulerName) throws SchedulerException;
 
@@ -47,11 +61,14 @@ public interface NinjaQuartzUtil {
      * all active {@link Scheduler}s), with the given jobName and jobGroup.
      * 
      * @param jobName
+     *            the name of the job
      * @param jobGroup
+     *            the group name of the job
      * @return a {@link Collection} of {@link Trigger}s for the given job name,
      *         which may be empty if no {@link Trigger} was found for the given
      *         job name/group.
      * @throws SchedulerException
+     *             as thrown by the Scheduler
      */
     public Collection<Trigger> getTriggersOfJob(String jobName, String jobGroup) throws SchedulerException;
 
@@ -59,6 +76,7 @@ public interface NinjaQuartzUtil {
      * @return a {@link Collection} of all scheduled {@link JobDetail}s from all
      *         {@link Scheduler}s.
      * @throws SchedulerException
+     *             as thrown by the Scheduler
      */
     public Collection<JobDetail> getAllJobDetails() throws SchedulerException;
 
@@ -67,9 +85,12 @@ public interface NinjaQuartzUtil {
      * from any {@link Scheduler}.
      * 
      * @param jobName
+     *            the name of the job
      * @param jobGroup
+     *            the group name of the job
      * @return the {@link JobDetail}, or null if not found.
      * @throws SchedulerException
+     *             as thrown by the Scheduler
      */
     public JobDetail getJobDetail(String jobName, String jobGroup) throws SchedulerException;
 }

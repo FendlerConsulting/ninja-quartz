@@ -25,54 +25,66 @@ import com.google.inject.Singleton;
 import ninja.utils.NinjaProperties;
 
 /**
- * @author Jens Fendler <jf@jensfendler.com>
+ * @author Jens Fendler
  *
  */
 @Singleton
 public class QuartzSchedulerFactoryProvider implements Provider<SchedulerFactory> {
 
-	private NinjaProperties ninjaProperties;
+    /**
+     * {@link NinjaProperties} as injected in constructor
+     */
+    private NinjaProperties ninjaProperties;
 
-	private Logger logger;
+    /**
+     * {@link Logger} as injected in constructor
+     */
+    private Logger logger;
 
-	private SchedulerFactory schedulerFactory;
+    private static SchedulerFactory schedulerFactory;
 
-	/**
-	 * 
-	 */
-	@Inject
-	public QuartzSchedulerFactoryProvider(NinjaProperties ninjaProperties, Logger logger) {
-		this.ninjaProperties = ninjaProperties;
-		this.logger = logger;
-		logger.info("{} instantiated.", getClass().getName());
-	}
+    @Inject
+    public QuartzSchedulerFactoryProvider(NinjaProperties ninjaProperties, Logger logger) {
+        this.ninjaProperties = ninjaProperties;
+        this.logger = logger;
+        logger.info("{} instantiated.", getClass().getName());
+    }
 
-	/**
-	 * @see com.google.inject.Provider#get()
-	 */
-	@Override
-	public SchedulerFactory get() {
-		logger.info("{} called to get SchedulerFactory.", getClass().getName());
-		if (schedulerFactory == null) {
-			loadSchedulerFactory();
-		}
-		return schedulerFactory;
-	}
+    /**
+     * @see com.google.inject.Provider#get()
+     */
+    @Override
+    public SchedulerFactory get() {
+        synchronized (schedulerFactory) {
+            logger.debug("{} called to get SchedulerFactory.", getClass().getName());
+            if (schedulerFactory == null) {
+                loadSchedulerFactory();
+            }
+            return schedulerFactory;
+        }
+    }
 
-	private void loadSchedulerFactory() {
-		String sfClassName = ninjaProperties.getWithDefault("quartz.schedulerFactory", "org.quartz.impl.StdSchedulerFactory");
-		logger.info("Using Quartz SchedulerFactory from {}.", sfClassName);
-		try {
-			Class<?> sfClass = Class.forName(sfClassName);
-			schedulerFactory = (SchedulerFactory) sfClass.newInstance();
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("Quartz SchedulerFactory class '" + sfClassName + "' not found.", e);
-		} catch (InstantiationException e) {
-			throw new RuntimeException("Cannot instantiate Quartz SchedulerFactory class '" + sfClassName + "'.", e);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException("Illegal access exception while trying to instantiate Quartz SchedulerFactory class '" + sfClassName + "'.",
-					e);
-		}
-	}
+    /**
+     * Instantiate the configured {@link SchedulerFactory} class.
+     */
+    private void loadSchedulerFactory() {
+        String sfClassName = ninjaProperties.getWithDefault("quartz.schedulerFactory",
+                "org.quartz.impl.StdSchedulerFactory");
+        logger.info("Using Quartz SchedulerFactory from {}.", sfClassName);
+
+        try {
+            Class<?> sfClass = Class.forName(sfClassName);
+            schedulerFactory = (SchedulerFactory) sfClass.newInstance();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Quartz SchedulerFactory class '" + sfClassName + "' not found.", e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException("Cannot instantiate Quartz SchedulerFactory class '" + sfClassName + "'.", e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(
+                    "Illegal access exception while trying to instantiate Quartz SchedulerFactory class '" + sfClassName
+                            + "'.",
+                    e);
+        }
+    }
 
 }

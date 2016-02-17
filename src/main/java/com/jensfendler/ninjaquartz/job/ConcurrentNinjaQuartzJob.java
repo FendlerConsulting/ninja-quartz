@@ -18,7 +18,7 @@ package com.jensfendler.ninjaquartz.job;
 /**
  * Quartz Job Wrapper for Concurrent, but non-stateful jobs.
  * 
- * @author Jens Fendler <jf@jensfendler.com>
+ * @author Jens Fendler
  *
  */
 public class ConcurrentNinjaQuartzJob extends AbstractNinjaQuartzJob {

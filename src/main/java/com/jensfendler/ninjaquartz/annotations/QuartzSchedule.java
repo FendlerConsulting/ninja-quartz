@@ -33,7 +33,7 @@ import org.quartz.TriggerBuilder;
 import com.jensfendler.ninjaquartz.NinjaQuartzScheduleHelper;
 
 /**
- * @author Jens Fendler <jf@jensfendler.com>
+ * @author Jens Fendler
  *
  */
 @Target(ElementType.METHOD)
@@ -74,11 +74,15 @@ public @interface QuartzSchedule {
 
     /**
      * The group name of the trigger to use for the scheduled method.
+     * 
+     * @return the name of the trigger group
      */
     String triggerGroup() default DEFAULT_TRIGGER_GROUP;
 
     /**
      * The name of the trigger to use for the scheduled method.
+     * 
+     * @return the name of the trigger
      */
     String triggerName() default DEFAULT_TRIGGER_NAME;
 
@@ -86,6 +90,8 @@ public @interface QuartzSchedule {
      * A datetime string in the format
      * {@link NinjaQuartzScheduleHelper#TRIGGER_DATETIME_FORMAT} indicating when
      * the trigger should end.
+     * 
+     * @return the datetime string to end the trigger
      * 
      * @see TriggerBuilder#endAt(java.util.Date)
      * 
@@ -96,28 +102,38 @@ public @interface QuartzSchedule {
      * The {@link #cronSchedule()} string defines the UNIX Cron-like execution
      * schedule to set for an annotated method.
      * 
+     * @return the cron expression defining the schedule
+     * 
      * @see CronExpression
      */
     String cronSchedule();
 
     /**
      * The name of the {@link Job} to run for the scheduled method.
+     * 
+     * @return the name of the job
      */
     String jobName() default DEFAULT_JOB_NAME;
 
     /**
      * The group name of the {@link Job} to run for the scheduled method.
+     * 
+     * @return the group name of the job
      */
     String jobGroup() default DEFAULT_JOB_GROUP;
 
     /**
      * The (optional) description of the {@link Job} to run for the scheduled
      * method.
+     * 
+     * @return the description of the job
      */
     String jobDescription() default DEFAULT_JOB_DESCRIPTION;
 
     /**
      * The recovery strategy for the {@link Job}.
+     * 
+     * @return the recovery property of the job.
      * 
      * @see JobBuilder#requestRecovery(boolean)
      */
@@ -125,6 +141,8 @@ public @interface QuartzSchedule {
 
     /**
      * The durability strategy for the {@link Job}.
+     * 
+     * @return the durability property of the job.
      * 
      * @see JobBuilder#storeDurably(boolean)
      */
@@ -135,6 +153,8 @@ public @interface QuartzSchedule {
      * {@link NinjaQuartzScheduleHelper#TRIGGER_DATETIME_FORMAT} indicating when
      * the trigger should start.
      * 
+     * @return the datetime string to start the trigger at
+     * 
      * @see TriggerBuilder#startAt(java.util.Date)
      */
     String triggerStartAt() default DEFAULT_TRIGGER_START_AT;
@@ -142,7 +162,9 @@ public @interface QuartzSchedule {
     /**
      * The priority for the {@link Trigger} to use for the scheduling.
      * 
-     * @See {@link TriggerBuilder#withPriority(int)
+     * @return the priority level of the trigger
+     * 
+     * @see TriggerBuilder#withPriority(int)
      */
     int triggerPriority() default Trigger.DEFAULT_PRIORITY;
 
@@ -150,11 +172,15 @@ public @interface QuartzSchedule {
      * The initial delay (in seconds) before the {@link Scheduler} should start
      * running after initialisation. By default the Scheduler will start without
      * delay.
+     * 
+     * @return the initial delay (seconds) of the scheduler
      */
     int schedulerDelay() default DEFAULT_SCHEDULER_DELAY;
 
     /**
      * The misfire strategy to use if the {@link CronTrigger} misfires.
+     * 
+     * @return the misfire policy to use for the cron trigger
      * 
      * @see CronScheduleBuilder#withMisfireHandlingInstructionDoNothing()
      * @see CronScheduleBuilder#withMisfireHandlingInstructionFireAndProceed()
@@ -168,12 +194,16 @@ public @interface QuartzSchedule {
      * parallel invocations are not a problem for you (or you need this), set
      * this property to true. In most cases, allowing this is probably a bad
      * idea.
+     * 
+     * @return the allowConcurrent property of the job
      */
     boolean allowConcurrent() default DEFAULT_ALLOW_PARALLEL_INVOCATIONS;
 
     /**
      * Support for stateful jobs, whose {@link JobDataMap} is kept between
      * incovations. Defaults to false.
+     * 
+     * @return the persistent property of the job
      */
     boolean persistent() default DEFAULT_PERSISTENT;
 

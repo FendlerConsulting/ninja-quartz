@@ -12,7 +12,7 @@
 	<parent>
 		<groupId>org.sonatype.oss</groupId>
 		<artifactId>oss-parent</artifactId>
-		<version>7</version>
+		<version>9</version>
 	</parent>
 
 	<properties>
@@ -31,8 +31,8 @@
 	</licenses>
 
 	<scm>
-		<url>https://github.com/jfendler/ninja-quartz</url>
-		<connection>scm:git://github.com/jfendler/ninja-quartz.git</connection>
+		<url>https://github.com/FendlerConsulting/ninja-quartz</url>
+		<connection>scm:git://github.com/FendlerConsulting/ninja-quartz.git</connection>
 		<developerConnection>scm:git:git@github.com:jfendler/ninja-quartz.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
@@ -47,7 +47,7 @@
 
 	<issueManagement>
 		<system>GitHub</system>
-		<url>https://github.com/jfendler/ninja-quartz/issues</url>
+		<url>https://github.com/FendlerConsulting/ninja-quartz/issues</url>
 	</issueManagement>
 
 	<mailingLists>

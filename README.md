@@ -113,7 +113,7 @@ Known Issues
 ------------
 - Using `@Transactional` and `@QuartzSchedule` annotations together:
 
-If you annotate the same method as transactional, and quartz-scheduled, you will notice the scheduler will never run the method. This appears to be a Guice related problem - a similar effect has been reported (here)[https://github.com/ninjaframework/ninja/issues/417] when using the standard Ninja scheduler.
+If you annotate the same method as transactional, and quartz-scheduled, you will notice the scheduler will never run the method. This appears to be a Guice related problem - a similar effect has been reported [here](https://github.com/ninjaframework/ninja/issues/417) when using the standard Ninja scheduler.
 To overcome this issue until the root cause is resolved, you should split your scheduled method into two parts: the top-level one with the `@QuartzSchedule` annotation, which can then call another method (in the same or in another class) which has the `@Transactional` annotation. So far, this seems to be working fine.
 
 ## License

@@ -24,7 +24,7 @@ Basic Usage:
 
 ```java
 
-install( NinjaQuartzModule.class );
+install( new NinjaQuartzModule() );
 
 ```
 

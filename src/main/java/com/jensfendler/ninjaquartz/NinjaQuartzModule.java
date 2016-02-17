@@ -43,10 +43,14 @@ public class NinjaQuartzModule extends AbstractModule {
         System.setProperty("org.terracotta.quartz.skipUpdateCheck", "true");
 
         bind(SchedulerFactory.class).toProvider(QuartzSchedulerFactoryProvider.class).in(Singleton.class);
+
         NinjaQuartzScheduleHelper scheduleHelper = new NinjaQuartzScheduleHelper();
         requestInjection(scheduleHelper);
+
         bindListener(Matchers.any(), new NinjaQuartzTypeListener(scheduleHelper));
         bind(NinjaQuartzScheduleHelper.class).toInstance(scheduleHelper);
+
+        bind(NinjaQuartzUtil.class).to(NinjaQuartzUtilImpl.class);
 
         logger.info("NinjaQuartz Module initialisation completed.");
     }

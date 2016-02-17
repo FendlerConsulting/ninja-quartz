@@ -30,6 +30,26 @@ install( NinjaQuartzModule.class );
 - Enjoy :-)
 
 
+### Accessing Schedulers, Triggers and Jobs
+
+You can inject `NinjaQuartzUtil` into your controllers, DAOs, etc. to get access to all running `Scheduler`s, `Trigger`s and `JobDetail`s.
+
+Example:
+
+```java
+
+@Inject
+NinjaQuartzUtils ninjaQuartz;
+
+public Result numberOfJobs() {
+	return Results.text().render("We have " + ninjaQuartz.getAllJobDetails().size() + " scheduled jobs." );
+}
+
+```   
+
+Please have a look at the `NinjaQuartzUtil` interface for available methods.
+
+
 ## License
 
 Copyright (C) 2016 Fendler Consulting cc.

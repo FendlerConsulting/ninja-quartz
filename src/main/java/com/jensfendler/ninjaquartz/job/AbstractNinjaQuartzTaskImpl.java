@@ -15,6 +15,7 @@
  */
 package com.jensfendler.ninjaquartz.job;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 
 import org.quartz.JobExecutionContext;
@@ -23,7 +24,7 @@ import org.quartz.JobExecutionContext;
  * @author Jens Fendler <jf@jensfendler.com>
  *
  */
-public abstract class AbstractNinjaQuartzTaskImpl implements NinjaQuartzTask {
+public abstract class AbstractNinjaQuartzTaskImpl implements NinjaQuartzTask, Serializable {
 
     protected String taskName;
 

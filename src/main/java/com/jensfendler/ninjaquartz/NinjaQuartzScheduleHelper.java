@@ -38,9 +38,12 @@ import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.jensfendler.ninjaquartz.annotations.QuartzSchedule;
 import com.jensfendler.ninjaquartz.job.NinjaQuartzTask;
+import com.jensfendler.ninjaquartz.job.AbstractNinjaQuartzJob;
 import com.jensfendler.ninjaquartz.job.AbstractNinjaQuartzTaskImpl;
 import com.jensfendler.ninjaquartz.job.ConcurrentNinjaQuartzJob;
+import com.jensfendler.ninjaquartz.job.ConcurrentStatefulNinjaQuartzJob;
 import com.jensfendler.ninjaquartz.job.NonConcurrentNinjaQuartzJob;
+import com.jensfendler.ninjaquartz.job.NonConcurrentStatefulNinjaQuartzJob;
 
 /**
  * @author Jens Fendler <jf@jensfendler.com>
@@ -175,6 +178,7 @@ public class NinjaQuartzScheduleHelper {
         boolean jobRecovery = quartzSchedule.jobRecovery();
         boolean jobDurability = quartzSchedule.jobDurability();
         boolean allowParallelInvocations = quartzSchedule.allowParallelInvocations();
+        boolean persistent = quartzSchedule.persistent();
 
         // create the job to execute
         NinjaQuartzTask task = new AbstractNinjaQuartzTaskImpl(jobName + "/" + jobGroup) {
@@ -191,9 +195,32 @@ public class NinjaQuartzScheduleHelper {
                 }
             }
         };
-        JobBuilder jobBuilder = JobBuilder
-                .newJob(allowParallelInvocations ? ConcurrentNinjaQuartzJob.class : NonConcurrentNinjaQuartzJob.class)
-                .withIdentity(jobName, jobGroup).requestRecovery(jobRecovery).storeDurably(jobDurability);
+
+        // determine the job wrapper class to use (the classes provide different
+        // annotations to support the requested Quartz functionality)
+        Class<? extends AbstractNinjaQuartzJob> jobClass = null;
+        if (allowParallelInvocations) {
+            // concurrent jobs
+            if (persistent) {
+                // concurrent, and persistent
+                jobClass = ConcurrentStatefulNinjaQuartzJob.class;
+            } else {
+                // concurrent, not not persistent
+                jobClass = ConcurrentNinjaQuartzJob.class;
+            }
+        } else {
+            // non-concurrent jobs
+            if (persistent) {
+                // non-concurrent, and persistent
+                jobClass = NonConcurrentStatefulNinjaQuartzJob.class;
+            } else {
+                // non-concurrent, and not persistent
+                jobClass = NonConcurrentNinjaQuartzJob.class;
+            }
+        }
+
+        JobBuilder jobBuilder = JobBuilder.newJob(jobClass).withIdentity(jobName, jobGroup).requestRecovery(jobRecovery)
+                .storeDurably(jobDurability);
         if (jobDescription != null) {
             jobBuilder = jobBuilder.withDescription(jobDescription);
         }

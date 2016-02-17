@@ -16,12 +16,14 @@
 package com.jensfendler.ninjaquartz.job;
 
 /**
+ * Quartz Job Wrapper for Concurrent, but non-stateful jobs.
+ * 
  * @author Jens Fendler <jf@jensfendler.com>
  *
  */
 public class ConcurrentNinjaQuartzJob extends AbstractNinjaQuartzJob {
 
-    public ConcurrentNinjaQuartzJob(String taskName) {
+    public ConcurrentNinjaQuartzJob() {
         super();
     }
 }

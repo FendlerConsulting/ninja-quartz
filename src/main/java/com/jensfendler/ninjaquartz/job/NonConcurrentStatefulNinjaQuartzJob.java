@@ -15,18 +15,19 @@
  */
 package com.jensfendler.ninjaquartz.job;
 
-import org.quartz.DisallowConcurrentExecution;
+import org.quartz.PersistJobDataAfterExecution;
 
 /**
- * Quartz Job Wrapper for Non-Concurrent and Stateful jobs.
+ * Quartz Job Wrapper for Non-Concurrent and non-Stateful jobs.
  * 
  * @author Jens Fendler <jf@jensfendler.com>
  *
  */
-@DisallowConcurrentExecution
-public class NonConcurrentNinjaQuartzJob extends AbstractNinjaQuartzJob {
+@PersistJobDataAfterExecution
+public class NonConcurrentStatefulNinjaQuartzJob extends NonConcurrentNinjaQuartzJob {
 
-    public NonConcurrentNinjaQuartzJob() {
+    public NonConcurrentStatefulNinjaQuartzJob() {
         super();
     }
+
 }

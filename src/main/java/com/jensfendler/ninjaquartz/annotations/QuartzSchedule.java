@@ -25,6 +25,7 @@ import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
+import org.quartz.JobDataMap;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
@@ -68,6 +69,8 @@ public @interface QuartzSchedule {
     String DEFAULT_TRIGGER_END_AT = "_noTriggerEndAt";
 
     boolean DEFAULT_ALLOW_PARALLEL_INVOCATIONS = false;
+
+    boolean DEFAULT_PERSISTENT = false;
 
     /**
      * The group name of the trigger to use for the scheduled method.
@@ -167,5 +170,11 @@ public @interface QuartzSchedule {
      * idea.
      */
     boolean allowParallelInvocations() default DEFAULT_ALLOW_PARALLEL_INVOCATIONS;
+
+    /**
+     * Support for stateful jobs, whose {@link JobDataMap} is kept between
+     * incovations. Defaults to false.
+     */
+    boolean persistent() default DEFAULT_PERSISTENT;
 
 }

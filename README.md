@@ -31,6 +31,7 @@ install( new NinjaQuartzModule() );
 - Add `QuartzSchedule` annotations the the methods you would like to schedule with Quartz. 
   For the time being, only `CronTrigger`s are used (the standard trigger's behavious is already available in Ninja's default scheduler).
   To set a schedule, add the required String parameter `cronSchedule` to the annotation.
+  
 
 Example:
 
@@ -40,12 +41,21 @@ Example:
 public class MySchedules {
 
     @QuartzSchedule(cronSchedule = "0/10 * * * * ?")
-    public void myScheduledMethod() {
-        // do your thing 
+    public void myFirstScheduledMethod() {
+        // do your thing
+    }
+
+
+    @QuartzSchedule(cronSchedule = "0/10 * * * * ?")
+    public void mySecondScheduledMethod(JobExecutionContext context) {
+        // do your thing
+        // you can access the Quartz job's JobExecutionContext here as well
     }
 }
 
 ```
+
+Please note that scheduled methods may have any return value (which is not further used by Ninja-Quartz), but must have either _no_ arguments, or exactly one argument of type `JobExecutionContext` which gives the method access to the Quartz job's context. 
 
 - Bind the classes containing your annotated methods using `bind(YourClassWithScheduledMethods.class)` in `conf.Module`.
 

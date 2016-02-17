@@ -32,6 +32,21 @@ install( new NinjaQuartzModule() );
   For the time being, only `CronTrigger`s are used (the standard trigger's behavious is already available in Ninja's default scheduler).
   To set a schedule, add the required String parameter `cronSchedule` to the annotation.
 
+Example:
+
+```java
+
+@Singleton
+public class MySchedules {
+
+    @QuartzSchedule(cronSchedule = "0/10 * * * * ?")
+    public void myScheduledMethod() {
+        // do your thing 
+    }
+}
+
+```
+
 - Bind the classes containing your annotated methods using `bind(YourClassWithScheduledMethods.class)` in `conf.Module`.
 
 - Enjoy :-)

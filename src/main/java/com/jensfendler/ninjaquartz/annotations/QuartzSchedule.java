@@ -169,7 +169,7 @@ public @interface QuartzSchedule {
      * this property to true. In most cases, allowing this is probably a bad
      * idea.
      */
-    boolean allowParallelInvocations() default DEFAULT_ALLOW_PARALLEL_INVOCATIONS;
+    boolean allowConcurrent() default DEFAULT_ALLOW_PARALLEL_INVOCATIONS;
 
     /**
      * Support for stateful jobs, whose {@link JobDataMap} is kept between

@@ -177,7 +177,7 @@ public class NinjaQuartzScheduleHelper {
 
         boolean jobRecovery = quartzSchedule.jobRecovery();
         boolean jobDurability = quartzSchedule.jobDurability();
-        boolean allowParallelInvocations = quartzSchedule.allowParallelInvocations();
+        boolean allowParallelInvocations = quartzSchedule.allowConcurrent();
         boolean persistent = quartzSchedule.persistent();
 
         // create the job to execute

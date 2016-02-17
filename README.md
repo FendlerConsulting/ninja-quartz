@@ -10,13 +10,13 @@ Basic Usage:
 
 - Add the dependency to your application's pom.xml:
 
-```
+```xml
 
-    &lt;dependency&gt;
-        &lt;groupId&gt;com.jensfendler&lt;/groupId&gt;
-        &lt;artifactId&gt;ninja-quartz&lt;/artifactId&gt;
-        &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
-    &lt;/dependency&gt;
+    <dependency>
+        <groupId>com.jensfendler</groupId>
+        <artifactId>ninja-quartz</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </dependency>
 
 ```
 

@@ -26,10 +26,16 @@ import org.quartz.JobExecutionContext;
  */
 public abstract class AbstractNinjaQuartzTaskImpl implements NinjaQuartzTask, Serializable {
 
+    /**
+     * The name of the task
+     */
     protected String taskName;
 
     /**
+     * Create a new {@link AbstractNinjaQuartzTaskImpl} object.
      * 
+     * @param taskName
+     *            the name of the task.
      */
     public AbstractNinjaQuartzTaskImpl(String taskName) {
         this.taskName = taskName;

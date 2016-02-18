@@ -31,15 +31,28 @@ import com.jensfendler.ninjaquartz.annotations.QuartzSchedule;
 public interface NinjaQuartzTask {
 
     /**
+     * Execute a scheduled method.
+     * 
      * @param context
+     *            the Quartz job's execution context (passed to the scheduled
+     *            method if it provides a single {@link JobExecutionContext}
+     *            parameter)
      * @throws IllegalAccessException
+     *             if the scheduled method cannot be called due to access
+     *             restrictions
      * @throws IllegalArgumentException
+     *             if the scheduled method cannot be called due to invalid
+     *             arguments (i.e. anything other than either no arguments, or a
+     *             single {@link JobExecutionContext} argument)
      * @throws InvocationTargetException
+     *             if the scheduled method could not be invoked.
      */
     public void execute(JobExecutionContext context)
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 
     /**
+     * Get the name of the task.
+     * 
      * @return the name of the wrapped task
      */
     public String getTaskName();

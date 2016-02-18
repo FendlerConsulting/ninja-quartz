@@ -40,15 +40,21 @@ public class NinjaQuartzUtilImpl implements NinjaQuartzUtil {
 
     protected static final Logger LOG = LoggerFactory.getLogger(NinjaQuartzUtil.class);
 
+    /**
+     * The {@link SchedulerFactory} provider as injected to the constructor.
+     */
     protected Provider<SchedulerFactory> schedulerFactoryProvider;
 
+    /**
+     * @param schedulerFactoryProvider
+     *            the {@link SchedulerFactory} provider to be injected.
+     */
     @Inject
     public NinjaQuartzUtilImpl(Provider<SchedulerFactory> schedulerFactoryProvider) {
         this.schedulerFactoryProvider = schedulerFactoryProvider;
     }
 
     /**
-     * @throws SchedulerException
      * @see com.jensfendler.ninjaquartz.NinjaQuartzUtil#getAllSchedulers()
      */
     @Override
@@ -57,7 +63,6 @@ public class NinjaQuartzUtilImpl implements NinjaQuartzUtil {
     }
 
     /**
-     * @throws SchedulerException
      * @see com.jensfendler.ninjaquartz.NinjaQuartzUtil#getSchedulerByName(java.lang.String)
      */
     @Override
@@ -66,10 +71,8 @@ public class NinjaQuartzUtilImpl implements NinjaQuartzUtil {
     }
 
     /**
-     * @param jobName
-     * @param jobGroup
-     * @return
-     * @throws SchedulerException
+     * @see com.jensfendler.ninjaquartz.NinjaQuartzUtil#getTriggersOfJob(java.lang.String,
+     *      java.lang.String)
      */
     @Override
     public Collection<Trigger> getTriggersOfJob(String jobName, String jobGroup) throws SchedulerException {

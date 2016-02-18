@@ -36,7 +36,7 @@
 	<scm>
 		<url>https://github.com/FendlerConsulting/ninja-quartz</url>
 		<connection>scm:git://github.com/FendlerConsulting/ninja-quartz.git</connection>
-		<tag>master</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<developers>

@@ -4,7 +4,7 @@
 	<artifactId>ninja-quartz</artifactId>
 	<packaging>jar</packaging>
 	<name>Ninja Quartz Scheduler Module</name>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<description>Quartz Scheduler Integration for the Ninja Web Framework</description>
 	<url>http://www.jensfendler.com/</url>
 

@@ -4,7 +4,7 @@
 	<artifactId>ninja-quartz</artifactId>
 	<packaging>jar</packaging>
 	<name>Ninja Quartz Scheduler Module</name>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.2</version>
 	<description>Quartz Scheduler Integration for the Ninja Web Framework</description>
 	<url>http://www.jensfendler.com/</url>
 
@@ -43,7 +43,7 @@
 		<url>https://github.com/FendlerConsulting/ninja-quartz</url>
 		<connection>scm:git://github.com/FendlerConsulting/ninja-quartz.git</connection>
 		<developerConnection>scm:git:git@github.com:FendlerConsulting/ninja-quartz.git</developerConnection>
-		<tag>HEAD</tag>
+		<tag>ninja-quartz-0.0.2</tag>
 	</scm>
 
 	<developers>

@@ -55,13 +55,11 @@ public class QuartzSchedulerFactoryProvider implements Provider<SchedulerFactory
      */
     @Override
     public SchedulerFactory get() {
-        synchronized (schedulerFactory) {
-            logger.debug("{} called to get SchedulerFactory.", getClass().getName());
-            if (schedulerFactory == null) {
-                loadSchedulerFactory();
-            }
-            return schedulerFactory;
+        logger.debug("{} called to get SchedulerFactory.", getClass().getName());
+        if (schedulerFactory == null) {
+            loadSchedulerFactory();
         }
+        return schedulerFactory;
     }
 
     /**

@@ -32,6 +32,7 @@ import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
 import org.quartz.TriggerBuilder;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -45,12 +46,16 @@ import com.jensfendler.ninjaquartz.job.ConcurrentStatefulNinjaQuartzJob;
 import com.jensfendler.ninjaquartz.job.NonConcurrentNinjaQuartzJob;
 import com.jensfendler.ninjaquartz.job.NonConcurrentStatefulNinjaQuartzJob;
 
+import ninja.utils.NinjaProperties;
+
 /**
  * @author Jens Fendler
  *
  */
 @Singleton
 public class NinjaQuartzScheduleHelper {
+
+    protected static final Logger logger = LoggerFactory.getLogger(NinjaQuartzModule.class);
 
     /**
      * The datetime format to use for the {@link QuartzSchedule} annotation's
@@ -62,28 +67,67 @@ public class NinjaQuartzScheduleHelper {
     /**
      * Name prefix for {@link CronTrigger}s.
      */
-    private static final String CRON_TRIGGER_NAME_PREFIX = "nqCT-";
+    protected static final String CRON_TRIGGER_NAME_PREFIX = "nqCT-";
 
     /**
      * Name prefix for {@link CronTrigger} groups.
      */
-    private static final String CRON_TRIGGER_GROUP_PREFIX = "nqCTG-";
+    protected static final String CRON_TRIGGER_GROUP_PREFIX = "nqCTG-";
 
     /**
      * Name prefix for {@link JobDetail}s.
      */
-    private static final String JOB_NAME_PREFIX = "nqJ-";
+    protected static final String JOB_NAME_PREFIX = "nqJ-";
 
     /**
      * Name prefix for {@link JobDetail} groups.
      */
-    private static final String JOB_GROUP_PREFIX = "nqJG-";
+    protected static final String JOB_GROUP_PREFIX = "nqJG-";
+
+    /**
+     * The key name of the property in application.conf which may contain the
+     * file name of the quartz.properties file to use for initialising the
+     * Quartz library.
+     */
+    protected static final String CONF_KEY_QUARTZ_PROPERTIES = "quartz.properties";
 
     @Inject
-    private Logger logger;
+    protected Provider<SchedulerFactory> schedulerFactoryProvider;
 
     @Inject
-    private Provider<SchedulerFactory> schedulerFactoryProvider;
+    protected NinjaProperties ninjaProperties;
+
+    /**
+     * If false, {@link #initialise()} will be called exactly once to read a
+     * user-provided quartz.properties file.
+     */
+    protected static boolean initialised;
+
+    /**
+     * Instantiate the helper class, and require initialisation.
+     */
+    public NinjaQuartzScheduleHelper() {
+        initialised = false;
+    }
+
+    /**
+     * Initialise the Quartz library before its first use
+     */
+    private void initialise() {
+        String quartzPropertiesFileName = ninjaProperties.get(CONF_KEY_QUARTZ_PROPERTIES);
+        if (quartzPropertiesFileName != null) {
+            logger.info("Initialising Quartz library using {}", quartzPropertiesFileName);
+            System.setProperty("org.quartz.properties", quartzPropertiesFileName);
+        } else {
+            // initialise with default values
+            logger.info(
+                    "Initialising Quartz library with default properties. Set '{}' in application.conf for custom properties.",
+                    CONF_KEY_QUARTZ_PROPERTIES);
+            System.setProperty("org.quartz.scheduler.instanceName", "NinjaQuartz");
+        }
+
+        initialised = true;
+    }
 
     /**
      * Scans all methods of the given object's class for NinjaQuartz scheduler
@@ -94,6 +138,10 @@ public class NinjaQuartzScheduleHelper {
      *            method)
      */
     public void scheduleTarget(Object target) {
+        if (!initialised) {
+            initialise();
+        }
+
         logger.debug("Scheduling target object of type {}", target.getClass().getName());
 
         Class<?> clazz = target.getClass();
@@ -229,7 +277,12 @@ public class NinjaQuartzScheduleHelper {
         JobDetail jobDetail = jobBuilder.build();
         // let the NinjaQuartzJob know which task (wrapping our scheduled
         // method) we want to execute
-        jobDetail.getJobDataMap().put(NonConcurrentNinjaQuartzJob.JOB_TASK_KEY, task);
+        jobDetail.getJobDataMap().put(AbstractNinjaQuartzJob.JOB_TASK_KEY, task);
+
+        // store other properties from the annotation in the job's context.
+        jobDetail.getJobDataMap().put(AbstractNinjaQuartzJob.JOB_REMOVE_ON_RUNTIME_ERROR,
+                quartzSchedule.removeOnError());
+        jobDetail.getJobDataMap().put(AbstractNinjaQuartzJob.JOB_FORCE_KEEP, quartzSchedule.forceKeep());
 
         logger.debug("Created new job {} in group: {}.", jobName, jobGroup);
         return jobDetail;

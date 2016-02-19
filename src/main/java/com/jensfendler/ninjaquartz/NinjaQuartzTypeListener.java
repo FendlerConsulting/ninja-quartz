@@ -32,7 +32,7 @@ import com.jensfendler.ninjaquartz.annotations.QuartzSchedule;
  */
 public class NinjaQuartzTypeListener implements TypeListener {
 
-    static final Logger logger = LoggerFactory.getLogger(NinjaQuartzScheduleHelper.class);
+    static final Logger logger = LoggerFactory.getLogger(NinjaQuartzModule.class);
 
     /**
      * The {@link NinjaQuartzScheduleHelper} as passed to the constructor.

@@ -17,10 +17,12 @@ package com.jensfendler.ninjaquartz.provider;
 
 import org.quartz.SchedulerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
+import com.jensfendler.ninjaquartz.NinjaQuartzModule;
 
 import ninja.utils.NinjaProperties;
 
@@ -31,23 +33,19 @@ import ninja.utils.NinjaProperties;
 @Singleton
 public class QuartzSchedulerFactoryProvider implements Provider<SchedulerFactory> {
 
+    protected static final Logger logger = LoggerFactory.getLogger(NinjaQuartzModule.class);
+
     /**
      * {@link NinjaProperties} as injected in constructor
      */
     private NinjaProperties ninjaProperties;
 
-    /**
-     * {@link Logger} as injected in constructor
-     */
-    private Logger logger;
-
     private static SchedulerFactory schedulerFactory;
 
     @Inject
-    public QuartzSchedulerFactoryProvider(NinjaProperties ninjaProperties, Logger logger) {
+    public QuartzSchedulerFactoryProvider(NinjaProperties ninjaProperties) {
+        logger.info("Initialising {}.", getClass().getName());
         this.ninjaProperties = ninjaProperties;
-        this.logger = logger;
-        logger.info("{} instantiated.", getClass().getName());
     }
 
     /**

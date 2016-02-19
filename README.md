@@ -85,6 +85,17 @@ The following other parameters are available, all of which have sensible default
 
 - `allowConcurrent` (boolean): specifies if multiple (parallel/concurrent) invocations of the same scheduled method should be allowed or not. Defaults to false. Unless you have a very good reason to allow concurrent executions, you should probably leave this one untouched.
 - `persistent` (boolean): specifies if the job's `JobDataMap` (containing the run-time context of your job) should be kept between invocations, thereby making your jobs stateful. Defaults to false. 
+- `forceKeep` (boolean): (_Version 0.0.3 only_) if set to true, scheduled tasks will not be removed from the scheduler upon _any_ exception thrown during their execution. Defaults to false. Prior to version 0.0.3 all exceptions resulted in the task being removed. 
+- `removeOnError` (boolean): (_Version 0.0.3 only_) if set to true, scheduled tasks will be removed upon an `InvocationTargetException` (typically wrapping run-time exceptions from your method) thrown while trying to invoke the scheduled method. Defaults to false, i.e. keeping your methods scheduled as long as only "normal" exceptions are thrown from their code. Prior to version 0.0.3 _all_ exceptions resulted in the task being removed.  
+
+
+
+Quartz Configuration through application.conf
+---------------------------------------------
+If you want to use a custom `SchedulerFactory`, you can set the class name of your factory through the `quartz.schedulerFactory` property in your `application.conf`.  
+
+If you would like fine-tune other configuration options of the Quartz library via a properties file, you can do so by providing a property `quartz.properties` in your `application.conf`, pointing to your Quartz properties file to use. (_Version 0.0.3 only_) If you do this, please note that the `SchedulerFactory` must still be configured with the `quartz.schedulerFactory` property in your `application. conf`.
+
 
 
 Accessing Schedulers, Triggers and Jobs:

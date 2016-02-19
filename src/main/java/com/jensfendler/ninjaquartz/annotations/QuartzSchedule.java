@@ -19,6 +19,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.InvocationTargetException;
 
 import org.quartz.CronExpression;
 import org.quartz.CronScheduleBuilder;
@@ -71,6 +72,10 @@ public @interface QuartzSchedule {
     boolean DEFAULT_ALLOW_PARALLEL_INVOCATIONS = false;
 
     boolean DEFAULT_PERSISTENT = false;
+
+    boolean DEFAULT_REMOVE_ON_ERROR = false;
+
+    boolean DEFAULT_FORCE_KEEP = false;
 
     /**
      * The group name of the trigger to use for the scheduled method.
@@ -206,5 +211,30 @@ public @interface QuartzSchedule {
      * @return the persistent property of the job
      */
     boolean persistent() default DEFAULT_PERSISTENT;
+
+    /**
+     * If this argument is set to <code>true</code>, the job will be immediately
+     * removed from the scheduler after a {@link InvocationTargetException} is
+     * thrown by the scheduled method.
+     * 
+     * If set to <code>false</code> (the default), the job will remain
+     * scheduled, and thrown exceptions will be logged briefly at WARN level.
+     * 
+     * @return the removeOnError property of the job
+     */
+    boolean removeOnError() default DEFAULT_REMOVE_ON_ERROR;
+
+    /**
+     * If this argument is set to <code>true</code>, this job will remain in the
+     * scheduler despite <em>any</em> exception that might be thrown during
+     * attempts to execute the scheduled method.
+     * 
+     * If it is set to <code>false</code> (the default), all (see
+     * {@link #removeOnError()} for an exception to this rule) exceptions thrown
+     * will result in the scheduled method being removed from the scheduler.
+     * 
+     * @return the forceKeep property of the job
+     */
+    boolean forceKeep() default DEFAULT_FORCE_KEEP;
 
 }

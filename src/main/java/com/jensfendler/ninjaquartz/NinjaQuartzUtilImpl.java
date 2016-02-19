@@ -38,7 +38,7 @@ import com.google.inject.Provider;
  */
 public class NinjaQuartzUtilImpl implements NinjaQuartzUtil {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(NinjaQuartzUtil.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(NinjaQuartzModule.class);
 
     /**
      * The {@link SchedulerFactory} provider as injected to the constructor.

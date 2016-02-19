@@ -26,8 +26,8 @@ install( new NinjaQuartzModule() );
 
 ```
 
-- Add `QuartzSchedule` annotations the the methods you would like to schedule with Quartz. 
-  For the time being, only `CronTrigger`s are used (the standard trigger's behavious is already available in Ninja's default scheduler).
+- Add `@QuartzSchedule` annotations the the methods you would like to schedule with Quartz. 
+  For the time being, only `CronTrigger`s are used (the standard trigger's behaviour is already available in Ninja's default scheduler).
   To set a schedule, add the required String parameter `cronSchedule` to the annotation.
   
 

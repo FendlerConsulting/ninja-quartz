@@ -181,7 +181,7 @@ public class NinjaQuartzScheduleHelper {
         try {
             Scheduler scheduler = createScheduler(method, quartzSchedule);
             scheduler.scheduleJob(jobDetail, cronTrigger);
-            logger.info("Scheduled {}.{} with execution schedule {}", method.getDeclaringClass().getName(),
+            logger.info("Scheduled {}::{} with cron schedule '{}'", method.getDeclaringClass().getName(),
                     method.getName(), quartzSchedule.cronSchedule());
         } catch (SchedulerException e) {
             if (e instanceof ObjectAlreadyExistsException) {
@@ -311,8 +311,22 @@ public class NinjaQuartzScheduleHelper {
         Date startAt = parseTriggerDatetime(quartzSchedule.triggerStartAt(), method);
         Date endAt = parseTriggerDatetime(quartzSchedule.triggerEndAt(), method);
         int triggerPriority = quartzSchedule.triggerPriority();
-        String cronSchedule = quartzSchedule.cronSchedule();
         int misfirePolicy = quartzSchedule.cronScheduleMisfirePolicy();
+
+        // check for an application.conf key name specified instead of a
+        // diretly specified schedule string
+        String appConfCronSchedule = ninjaProperties.get(quartzSchedule.cronSchedule());
+        // if we have a non-null value from application.conf, we use that.
+        // otherwise assume a schedule was directly given in the annotation
+        String cronSchedule = null;
+        if (appConfCronSchedule != null) {
+            cronSchedule = appConfCronSchedule;
+            logger.debug("Using cronSchedule from application.conf property '{}': {}", quartzSchedule.cronSchedule(),
+                    cronSchedule);
+        } else {
+            cronSchedule = quartzSchedule.cronSchedule();
+            logger.debug("Using cronSchedule as provided in annotation: {}", cronSchedule);
+        }
 
         // build the cron schedule
         CronScheduleBuilder csb = null;

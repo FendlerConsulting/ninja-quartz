@@ -13,7 +13,7 @@ Basic Usage:
     <dependency>
         <groupId>com.jensfendler</groupId>
         <artifactId>ninja-quartz</artifactId>
-        <version>0.0.3</version>
+        <version>0.0.4</version>
     </dependency>
 
 ```
@@ -28,7 +28,11 @@ install( new NinjaQuartzModule() );
 
 - Add `@QuartzSchedule` annotations the the methods you would like to schedule with Quartz. 
   For the time being, only `CronTrigger`s are used (the standard trigger's behaviour is already available in Ninja's default scheduler).
-  To set a schedule, add the required String parameter `cronSchedule` to the annotation.
+  To set a schedule, use the required String parameter `cronSchedule` in the annotation.
+  
+  The `cronSchedule` string may contain either a directly specified cron scheduler value (as understood by Quartz), *or* a property key
+  name from Ninja's `application.conf`, which must then contain a cron scheduler value. The later case is useful if you want to have
+  some external configuration control over the schedules used, and prefer to not hardcode them into your application.
   
 
 Example:
@@ -44,7 +48,8 @@ public class MySchedules {
     }
 
 
-    @QuartzSchedule(cronSchedule = "0/10 * * * * ?")
+    // Use a cron schedule as specified in Ninja's application.conf property 'schedule.secondMethod' 
+    @QuartzSchedule(cronSchedule = "schedule.secondMethod")
     public void mySecondScheduledMethod(JobExecutionContext context) {
         // do your thing
         // you can access the Quartz job's JobExecutionContext here as well
@@ -64,7 +69,7 @@ Annotation Parameters and Job Configuration
 -------------------------------------------
 The `@QuartzSchedule` annotation has a number of parameters which can be used to fine-tune the job and its scheduling (on a per method basis), and to use some advanced features of Quartz.
 
-- `cronSchedule`: This is the only required parameter without a default value. It must contain a String in Cron syntax, specifying the schedule to use.
+- `cronSchedule`: This is the only required parameter without a default value. It must contain a String in Quartz' Cron Scheduler syntax, specifying the schedule to use, *or* the name of a property in Ninja's `application.conf`, which must then contain a string in Quartz' Cron Scheduler syntax. 
 
 The following other parameters are available, all of which have sensible defaults:
 

@@ -107,7 +107,9 @@ public @interface QuartzSchedule {
      * The {@link #cronSchedule()} string defines the UNIX Cron-like execution
      * schedule to set for an annotated method.
      * 
-     * @return the cron expression defining the schedule
+     * @return the cron expression defining the schedule, <em>or</em> the key
+     *         name of a Ninja property (from application.conf) that contains a
+     *         Cron Schedule string.
      * 
      * @see CronExpression
      */

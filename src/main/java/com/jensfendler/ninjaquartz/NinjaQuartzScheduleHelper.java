@@ -182,7 +182,7 @@ public class NinjaQuartzScheduleHelper {
             Scheduler scheduler = createScheduler(method, quartzSchedule);
             scheduler.scheduleJob(jobDetail, cronTrigger);
             logger.info("Scheduled {}::{} with cron schedule '{}'", method.getDeclaringClass().getName(),
-                    method.getName(), quartzSchedule.cronSchedule());
+                    method.getName(), cronTrigger.getCronExpression());
         } catch (SchedulerException e) {
             if (e instanceof ObjectAlreadyExistsException) {
                 // for some reason we're trying to schedule the same method
@@ -376,13 +376,15 @@ public class NinjaQuartzScheduleHelper {
 
         SchedulerFactory sf = schedulerFactoryProvider.get();
         Scheduler scheduler = sf.getScheduler();
-        if (schedulerDelay == -1) {
-            scheduler.start();
-            logger.debug("Created new scheduler of type {}", scheduler.getClass().getName());
-        } else {
-            scheduler.startDelayed(schedulerDelay);
-            logger.debug("Created new scheduler of type {} with initial delay {}", scheduler.getClass().getName(),
-                    schedulerDelay);
+        if (!scheduler.isStarted()) {
+            if (schedulerDelay == -1) {
+                scheduler.start();
+                logger.debug("Started new scheduler of type {}", scheduler.getClass().getName());
+            } else {
+                scheduler.startDelayed(schedulerDelay);
+                logger.debug("Started new scheduler of type {} with delay {}", scheduler.getClass().getName(),
+                        schedulerDelay);
+            }
         }
 
         return scheduler;

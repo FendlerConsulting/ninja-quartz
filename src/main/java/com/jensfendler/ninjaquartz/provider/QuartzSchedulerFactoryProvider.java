@@ -51,7 +51,6 @@ public class QuartzSchedulerFactoryProvider implements Provider<SchedulerFactory
     /**
      * @see com.google.inject.Provider#get()
      */
-    @Override
     public SchedulerFactory get() {
         logger.debug("{} called to get SchedulerFactory.", getClass().getName());
         if (schedulerFactory == null) {

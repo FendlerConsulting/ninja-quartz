@@ -44,14 +44,12 @@ public abstract class AbstractNinjaQuartzTaskImpl implements NinjaQuartzTask, Se
     /**
      * @see com.jensfendler.ninjaquartz.job.NinjaQuartzTask#execute(org.quartz.JobExecutionContext)
      */
-    @Override
     public abstract void execute(JobExecutionContext context)
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 
     /**
      * @see com.jensfendler.ninjaquartz.job.NinjaQuartzTask#getTaskName()
      */
-    @Override
     public String getTaskName() {
         return taskName;
     }

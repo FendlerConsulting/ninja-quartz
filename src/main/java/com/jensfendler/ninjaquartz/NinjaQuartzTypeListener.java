@@ -47,7 +47,6 @@ public class NinjaQuartzTypeListener implements TypeListener {
      * @see com.google.inject.spi.TypeListener#hear(com.google.inject.TypeLiteral,
      *      com.google.inject.spi.TypeEncounter)
      */
-    @Override
     public <I> void hear(TypeLiteral<I> type, TypeEncounter<I> encounter) {
         Class<?> clazz = type.getRawType();
         for (Method method : clazz.getMethods()) {
@@ -72,11 +71,16 @@ public class NinjaQuartzTypeListener implements TypeListener {
 
         private final NinjaQuartzScheduleHelper scheduleHelper;
 
+        /**
+         * @param scheduleHelper
+         */
         private QuartzScheduleInjectionListener(NinjaQuartzScheduleHelper scheduleHelper) {
             this.scheduleHelper = scheduleHelper;
         }
 
-        @Override
+        /**
+         * @see com.google.inject.spi.InjectionListener#afterInjection(java.lang.Object)
+         */
         public void afterInjection(final I injectee) {
             scheduleHelper.scheduleTarget(injectee);
         }

@@ -57,7 +57,6 @@ public class NinjaQuartzUtilImpl implements NinjaQuartzUtil {
     /**
      * @see com.jensfendler.ninjaquartz.NinjaQuartzUtil#getAllSchedulers()
      */
-    @Override
     public Collection<Scheduler> getAllSchedulers() throws SchedulerException {
         return schedulerFactoryProvider.get().getAllSchedulers();
     }
@@ -65,7 +64,6 @@ public class NinjaQuartzUtilImpl implements NinjaQuartzUtil {
     /**
      * @see com.jensfendler.ninjaquartz.NinjaQuartzUtil#getSchedulerByName(java.lang.String)
      */
-    @Override
     public Scheduler getSchedulerByName(String schedulerName) throws SchedulerException {
         return schedulerFactoryProvider.get().getScheduler(schedulerName);
     }
@@ -74,7 +72,6 @@ public class NinjaQuartzUtilImpl implements NinjaQuartzUtil {
      * @see com.jensfendler.ninjaquartz.NinjaQuartzUtil#getTriggersOfJob(java.lang.String,
      *      java.lang.String)
      */
-    @Override
     public Collection<Trigger> getTriggersOfJob(String jobName, String jobGroup) throws SchedulerException {
         JobKey jk = JobKey.jobKey(jobName, jobGroup);
         Set<Trigger> allTriggers = new HashSet<Trigger>();
@@ -97,7 +94,6 @@ public class NinjaQuartzUtilImpl implements NinjaQuartzUtil {
     /**
      * @see com.jensfendler.ninjaquartz.NinjaQuartzUtil#getAllJobDetails()
      */
-    @Override
     public Collection<JobDetail> getAllJobDetails() throws SchedulerException {
         Set<JobDetail> allJobDetails = new HashSet<JobDetail>();
         for (Scheduler scheduler : getAllSchedulers()) {
@@ -112,7 +108,6 @@ public class NinjaQuartzUtilImpl implements NinjaQuartzUtil {
      * @see com.jensfendler.ninjaquartz.NinjaQuartzUtil#getJobDetail(java.lang.String,
      *      java.lang.String)
      */
-    @Override
     public JobDetail getJobDetail(String jobName, String jobGroup) throws SchedulerException {
         for (Scheduler scheduler : getAllSchedulers()) {
             for (JobKey jk : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(jobGroup))) {

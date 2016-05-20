@@ -72,7 +72,6 @@ public abstract class AbstractNinjaQuartzJob implements Job {
     /**
      * @see org.quartz.Job#execute(org.quartz.JobExecutionContext)
      */
-    @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         // get NinjaQuartz settings from the context
         boolean forceKeepJob = context.getMergedJobDataMap().containsKey(JOB_FORCE_KEEP)

@@ -235,7 +235,7 @@ public class NinjaQuartzScheduleHelper {
             @Override
             public void execute(JobExecutionContext context)
                     throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-                if ((method.getParameterCount() == 1)
+                if ((method.getParameters() != null) && (method.getParameters().length == 1)
                         && (JobExecutionContext.class.isAssignableFrom(method.getParameterTypes()[0]))) {
                     // the scheduled method can receive the context
                     Object[] parameters = new Object[] { context };

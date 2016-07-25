@@ -13,7 +13,7 @@ Basic Usage:
     <dependency>
         <groupId>com.jensfendler</groupId>
         <artifactId>ninja-quartz</artifactId>
-        <version>0.0.6</version>
+        <version>0.0.7</version>
     </dependency>
 
 ```
@@ -32,7 +32,7 @@ install( new NinjaQuartzModule() );
   
   The `cronSchedule` string may contain either a directly specified cron scheduler value (as understood by Quartz), *or* a property key
   name from Ninja's `application.conf`, which must then contain a cron scheduler value. The later case is useful if you want to have
-  some external configuration control over the schedules used, and prefer to not hardcode them into your application.
+  some external configuration control over the schedules used, and prefer not to hardcode them into your application.
   
 
 Example:
@@ -54,11 +54,20 @@ public class MySchedules {
         // do your thing
         // you can access the Quartz job's JobExecutionContext here as well
     }
+
+    @QuartzSchedule(cronSchedule = "schedule.secondMethod")
+    public void myThirdScheduledMethod(NinjaProperties ninjaProperties) {
+    	// ninjaProperties is injected via guice
+		if ( ninjaProperties.isDev() ) {
+			// do something
+		}
+    }
 }
 
 ```
 
-Please note that scheduled methods may have any return value (which is not further used by Ninja-Quartz), but must have either _no_ arguments, or _exactly one argument of type `JobExecutionContext`_ which gives the method access to the Quartz job's context. 
+Since version 0.0.7 Ninja-Quartz supports Guice-injection for parameters of your scheduled methods. I.e. you can use any types which the guice injector knows how to provide. In addition, Ninja-Quartz also allows you to use a parameter of type `JobExecutionContext`, allowing you to access the Quartz provided context at runtime.
+
 
 - Bind the classes containing your annotated methods using `bind(YourClassWithScheduledMethods.class)` in `conf.Module`.
 

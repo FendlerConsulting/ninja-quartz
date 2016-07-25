@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.jensfendler.ninjaquartz.annotations.QuartzSchedule;
@@ -97,6 +98,9 @@ public class NinjaQuartzScheduleHelper {
     @Inject
     protected NinjaProperties ninjaProperties;
 
+    @Inject
+    protected Injector injector;
+
     /**
      * If false, {@link #initialise()} will be called exactly once to read a
      * user-provided quartz.properties file.
@@ -146,8 +150,8 @@ public class NinjaQuartzScheduleHelper {
 
         Class<?> clazz = target.getClass();
         for (Method method : clazz.getMethods()) {
-            QuartzSchedule quartzSchedule = method.getAnnotation(QuartzSchedule.class);
-            if (quartzSchedule != null) {
+            if (method.isAnnotationPresent(QuartzSchedule.class)) {
+                QuartzSchedule quartzSchedule = method.getAnnotation(QuartzSchedule.class);
                 scheduleMethod(target, method, quartzSchedule);
             }
         }
@@ -188,9 +192,8 @@ public class NinjaQuartzScheduleHelper {
                 // for some reason we're trying to schedule the same method
                 // multiple times. not to worry - unless the task name/group is
                 // the same
-                logger.debug(
-                        "Not scheduling " + method.getDeclaringClass().getName() + "." + method.getName() + " twice.",
-                        e);
+                logger.debug("Not scheduling " + method.getDeclaringClass().getName() + "." + method.getName()
+                        + " twice: {}", e.getMessage());
             } else {
                 logger.error("Failed to schedule " + method.getDeclaringClass().getName() + "." + method.getName(), e);
             }
@@ -235,13 +238,32 @@ public class NinjaQuartzScheduleHelper {
             @Override
             public void execute(JobExecutionContext context)
                     throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-                if ((method.getParameters() != null) && (method.getParameters().length == 1)
-                        && (JobExecutionContext.class.isAssignableFrom(method.getParameterTypes()[0]))) {
-                    // the scheduled method can receive the context
-                    Object[] parameters = new Object[] { context };
-                    method.invoke(target, parameters);
-                } else {
+                if (method.getParameterTypes().length == 0) {
+                    // no arguments
                     method.invoke(target);
+
+                } else {
+                    // multiple arguments. try to inject parameters through
+                    // guice
+                    Object[] parameters = new Object[method.getParameterTypes().length];
+                    int i = 0;
+                    for (Class<?> type : method.getParameterTypes()) {
+                        Object obj = null;
+                        if (JobExecutionContext.class.isAssignableFrom(method.getParameterTypes()[i])) {
+                            // support mix of JobExecutionContext and other
+                            // (injected) arguments
+                            obj = context;
+                        } else {
+                            obj = injector.getInstance(type);
+                        }
+                        if (obj == null) {
+                            // guice did not provide an object
+                            logger.warn("Using null value for parameter of type {} in call to scheduled method {}",
+                                    type.getName(), method.getName());
+                        }
+                        parameters[i++] = obj;
+                    }
+                    method.invoke(target, parameters);
                 }
             }
         };
